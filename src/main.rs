@@ -24,6 +24,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let args = Cli::parse();
 
+    if args.prompt.is_empty() {
+        println!("No prompt provided!");
+        return Ok(());
+    }
+
     let body = Body {
         model: "gpt-3.5-turbo".to_string(),
         messages: vec![Message::user(args.prompt.join(" "))],
@@ -52,7 +57,14 @@ fn main() -> Result<(), Box<dyn Error>> {
         .unwrap_or_default();
 
     let response = if args.code {
-        response.split("```").collect::<Vec<&str>>()[1].to_string()
+        let split = response.split("```").collect::<Vec<&str>>();
+        if split.is_empty() {
+            response.to_string()
+        } else if split.len() == 1 {
+            split[0].to_string()
+        } else {
+            split[1].to_string()
+        }
     } else {
         response.to_string()
     };
