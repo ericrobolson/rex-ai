@@ -1,3 +1,7 @@
+mod agent;
+mod chatllm;
+mod repl;
+
 use clap::Parser;
 use serde::{Deserialize, Serialize};
 use std::env;
@@ -19,13 +23,18 @@ struct Cli {
     prompt: Vec<String>,
 }
 
+pub fn api_key() -> String {
+    env::var(OPENAI_KEY).expect(&format!("Expected '{OPENAI_KEY} to be set!"))
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
     let api_key = env::var(OPENAI_KEY).expect(&format!("Expected '{OPENAI_KEY} to be set!"));
 
     let args = Cli::parse();
 
     if args.prompt.is_empty() {
-        println!("No prompt provided!");
+        println!("Starting interactive mode...");
+        repl::run()?;
         return Ok(());
     }
 
