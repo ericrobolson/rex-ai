@@ -9,6 +9,7 @@ use std::error::Error;
 use std::time::Duration;
 
 const OPENAI_KEY: &'static str = "OPENAI_API_KEY";
+const OPENAI_MODEL: &'static str = "REX_AI_MODEL";
 
 /// A CLI for interacting with OpenAI's GPT-3 API.
 #[derive(Parser, Clone, Debug, PartialEq)]
@@ -17,6 +18,9 @@ struct Cli {
     /// Signals whether to parse out code or not.
     #[arg(short, long)]
     code: bool,
+    /// Print out model used.
+    #[arg(short, long)]
+    print_model: bool,
 
     /// The prompt to use.
     #[arg(last = true)]
@@ -27,10 +31,21 @@ pub fn api_key() -> String {
     env::var(OPENAI_KEY).expect(&format!("Expected '{OPENAI_KEY} to be set!"))
 }
 
+pub fn model() -> String{
+    match env::var(OPENAI_MODEL){
+        Ok(var) => var,
+        Err(_) => "gpt-3.5-turbo".to_string(),
+    }
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
     let api_key = env::var(OPENAI_KEY).expect(&format!("Expected '{OPENAI_KEY} to be set!"));
 
     let args = Cli::parse();
+
+    if args.print_model {
+        println!("{}", model());     
+    }
 
     if args.prompt.is_empty() {
         println!("Starting interactive mode...");
@@ -39,7 +54,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     let body = Body {
-        model: "gpt-3.5-turbo".to_string(),
+        model: model(),
         messages: vec![Message::user(args.prompt.join(" "))],
         temperature: 0.7,
     };

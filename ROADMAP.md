@@ -1,1 +1,3 @@
-- [ ] Add in stop tokens for CHATGPT
+- [ ] Redo CLI interface
+- [ ] Add better REPL
+- [ ] Build out agent framework
