@@ -1,7 +1,7 @@
 mod agent;
 mod chatllm;
+mod historical_context;
 mod repl;
-
 use clap::Parser;
 use serde::{Deserialize, Serialize};
 use std::env;
@@ -31,8 +31,8 @@ pub fn api_key() -> String {
     env::var(OPENAI_KEY).expect(&format!("Expected '{OPENAI_KEY} to be set!"))
 }
 
-pub fn model() -> String{
-    match env::var(OPENAI_MODEL){
+pub fn model() -> String {
+    match env::var(OPENAI_MODEL) {
         Ok(var) => var,
         Err(_) => "gpt-3.5-turbo".to_string(),
     }
@@ -44,7 +44,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let args = Cli::parse();
 
     if args.print_model {
-        println!("{}", model());     
+        println!("{}", model());
     }
 
     if args.prompt.is_empty() {
